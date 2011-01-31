@@ -1,0 +1,12 @@
+CACHE MANIFEST
+
+NETWORK:
+http://mobile-bookmark-bubble.googlecode.com/hg/bookmark_bubble.js
+
+CACHE:
+index.htm
+jquery.min.js
+chroma-hash.js
+oplop.js
+oplop114.png
+oplop16.png

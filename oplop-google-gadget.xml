@@ -1,0 +1,16 @@
+<Module>
+  <ModulePrefs
+    title="Oplop"
+    title_url="http://code.google.com/p/oplop/wiki/HowItWorks"
+    description="Oplop password generator. See http://code.google.com/p/oplop/wiki/HowItWorks for more information."
+    height="185"
+    scrolling="true"
+    screenshot="http://heap.joshdick.net/oplop/oplop-google-gadget-screenshot.png"
+    author="Joshua Dick"
+    author_email="josh@joshdick.net"
+    author_location="MA, USA"
+    author_affiliation="http://joshdick.net"
+    category="tools"
+ />
+  <Content type="url" href="http://heap.joshdick.net/oplop/" />
+</Module>
