@@ -94,7 +94,7 @@
                   "-ms-transition": "background-color 0.5s",
                 };
 
-                if (navigator.userAgent.indexOf("Safari") > -1 && navigator.userAgent.indexOf('Chrome') < 0) {
+                if (navigator.userAgent.indexOf("Safari") > -1 || navigator.userAgent.indexOf("Chrome") > -1) {
                   properties.marginTop = 3 + "px";
                 } else {
                   properties.marginTop = 1 + "px";
