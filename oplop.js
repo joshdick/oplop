@@ -269,7 +269,7 @@ var oplop = {};
     @private
 */
 oplop.latin1_to_utf8_ = function latin1_to_utf8(text) {
-    var converted = new Array();
+    var converted = [];
 
     for (var x = 0; x < text.length; x += 1) {
         var code_point = text.charCodeAt(x);

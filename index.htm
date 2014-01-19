@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" manifest="cache.manifest">
+
   <!-- Created by Joshua Dick <http://joshdick.net>. Based on code from the official Oplop implementation at <http://oplop.appspot.com>. -->
+
   <head>
+
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="language" content="en" />
     <meta name="description" content="A password generator that utilizes the Oplop algorithm." />
@@ -17,41 +20,42 @@
     <link rel="icon" type="image/png" href="oplop16.png" />
 
     <title>Oplop</title>
-    <script type="text/javascript" src="http://mobile-bookmark-bubble.googlecode.com/hg/bookmark_bubble.js"></script>
-    <!-- Use locally-hosted jQuery so it can be cached for offline use -->
+
+    <!-- Use locally-hosted libraries so they can be cached for offline use -->
     <script type="text/javascript" src="./jquery.min.js"></script>
-    <script type="text/javascript" src="./chroma-hash.js"></script>
+    <script type="text/javascript" src="./jquery.chroma-hash.js"></script>
     <script type="text/javascript" src="./oplop.js"></script>
+
     <style type="text/css">
-      * { font-family:Helvetica, Arial, sans-serif; }
-      input.normal { font-size:1.1em; width:286px; }
-      label.normal { font-size:1em; display:block; border:1px solid #CCC; border-radius:5px; -moz-border-radius:5px; background:#EEF; padding:5px; }
-      input.gadget { font-size:0.8em; width:180px; }
-      label.gadget { font-size:0.8em; font-weight:bold; margin-right:10px; border:1px solid #CCC; border-radius:5px; -moz-border-radius:5px; background:#EEF; padding:5px; }
-      div.gadget { display: none; }
+      html, body { font-family:Helvetica, Arial, sans-serif; }
+      input { font-size:1.1em; width:286px; }
+      label:not(.chroma-hash) { font-size:1em; display:block; border:1px solid #CCC; border-radius:5px; background:#EEF; padding:5px; }
       .note { font-size:0.7em; }
     </style>
+
   </head>
+
   <body>
+
     <noscript><b>This web application requires JavaScript.</b></noscript>
-    <label class="normal" for="nickname">Account Nickname:</label><input class="normal" type="text" id="nickname" required placeholder="Nickname goes here" autofocus />
+    <label for="nickname">Account Nickname:</label><input type="text" id="nickname" required placeholder="Nickname goes here" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus />
     <br />
-    <span class="note"><a href="http://code.google.com/p/oplop/wiki/HowItWorks" target="_blank" tabindex="-1">E.g.</a>, <em>Amazon, AMZN, or bookstore</em></span>
+    <span class="note"><a href="https://github.com/brettcannon/oplop#how-it-works" tabindex="-1">E.g.</a>, <em>Amazon, AMZN, or bookstore</em></span>
     <br /><br />
-    <label class="normal" for="masterPassword">Master Password:</label><input class="normal" type="password" id="masterPassword" required placeholder="Master password goes here" />
+    <label for="masterPassword">Master Password:</label><input type="password" id="masterPassword" required placeholder="Master password goes here" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
     <br />
-    <span class="note">Validate your master password by memorizing <a href="http://mattt.github.com/Chroma-Hash/" target="_blank" tabindex="-1">the pattern that will appear</a> inside this field; it'll be unique to your password.</span>
+    <span class="note">Validate your master password by memorizing <a href="http://mattt.github.io/Chroma-Hash/" tabindex="-1">the pattern that will appear</a> inside this field; it'll be unique to your password.</span>
     <br /><br />
-    <label class="normal" for="accountPassword"><em>Unique</em> Account Password:</label><input class="normal" type="text" id="accountPassword" />
+    <label for="accountPassword"><em>Unique</em> Account Password:</label><input type="text" id="accountPassword" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
     <div id="info">
       <hr />
       <table style="width:100%">
         <tr>
           <td>
-            <div class="note" style="text-align: left;">Created by <a href="http://joshdick.net" target="_blank">Joshua Dick</a>, based on the <a href="http://oplop.appspot.com" target="_blank">official implementation</a>.&nbsp;|&nbsp;View <a href="https://github.com/joshdick/oplop">source code</a> at Github.</div>
+            <div class="note" style="text-align: left;">Created by <a href="http://joshdick.net">Joshua Dick</a>, based on the <a href="http://oplop.appspot.com">official implementation</a>.&nbsp;|&nbsp;View <a href="https://github.com/joshdick/oplop">source code</a> at Github.</div>
           </td>
           <td>
-            <div class="note" style="text-align: right;">This page is also an iOS Web App and a <a href="http://www.google.com/ig/directory?url=heap.joshdick.net/oplop/oplop-google-gadget.xml" target="_blank">Google Gadget</a>.&nbsp;|&nbsp;<a href="http://code.google.com/p/oplop/wiki/HowItWorks" target="_blank" tabindex="-1">How This Works</a></div>
+            <div class="note" style="text-align: right;">This page is also an iOS Web App.&nbsp;|&nbsp;<a href="https://github.com/brettcannon/oplop#how-it-works" tabindex="-1">How This Works</a></div>
           </td>
         </tr>
       </table>
@@ -59,69 +63,35 @@
 
     <script type="text/javascript">
 
-      $(document).ready(function(){
+      $(function() {
 
-        //Found at http://stackoverflow.com/questions/901115/get-querystring-values-with-jquery
-        var urlParams = {};
-        (function () {
-          var e,
-          a = /\+/g, //Regex for replacing addition symbol with a space
-          r = /([^&;=]+)=?([^&;]*)/g,
-          d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
-          q = window.location.search.substring(1);
-          while (e = r.exec(q))
-            urlParams[d(e[1])] = d(e[2]);
-        })();
-
-        //Relatively dirty hack:
-        //If there are url query string parameters "synd" or "container", we're probably running as a Google Gadget, so re-style the page accordingly
-        if (urlParams.synd || urlParams.container) {
-          $("input,label").removeClass("normal");
-          $("input,label,#info").addClass("gadget");
-        }
-
-        //Code for Google Bookmark Bubble - based on example code found at http://code.google.com/p/mobile-bookmark-bubble/source/browse/#hg%2Fexample%253Fstate%253Dclosed
-        if (window.google && google.bookmarkbubble) { //If we're running as an offline webapp in iOS, the bookmark bubble script won't be available (or needed)
-          var bubble = new google.bookmarkbubble.Bubble();
-          var parameter = 'bmb=1';
-          bubble.hasHashParameter = function() {
-            return window.location.hash.indexOf(parameter) != -1;
-          };
-          bubble.setHashParameter = function() {
-            if (!this.hasHashParameter()) {
-              window.location.hash += parameter;
-            }
-          };
-          bubble.showIfAllowed();
-        }
-
-        //Disable iOS formatting for all fields
-        //jQuery's attr() has no effect for some reason, so use an iterator with setAttribute instead
-        $("input").each(function(index) {
-          this.setAttribute("autocorrect", "off");
-          this.setAttribute("autocapitalize", "off");
-        });
+        var accountPassword = $("#accountPassword");
+        var masterPassword = $("#masterPassword");
+        var nickname = $("#nickname");
 
         //Add chroma-hash to the 'Master Password' field
-        $("input:password").chromaHash({bars: 3, salt: "05c54bce483143af3d2b24dc004d6551", minimum: 5});
+        masterPassword.chromaHash({ bars: 3, salt: "05c54bce483143af3d2b24dc004d6551", minimum: 5 });
 
         //When the 'Account Password' field is focused, actually generate the password
-        $("#accountPassword").focusin(function() {
-          if ($("#nickname").val() && $("#masterPassword").val())
-            $("#accountPassword").val(oplop.accountPassword($("#nickname").val(), $("#masterPassword").val()));
-            $("#accountPassword").select();
+        accountPassword.focusin(function() {
+          if (nickname.val() && masterPassword.val())
+            accountPassword.val(oplop.accountPassword(nickname.val(), masterPassword.val()));
+            accountPassword.select();
         });
 
         //When the 'Account Password' field loses focus, clean up...
-        $("#accountPassword").focusout(function() {
-          if ($("#nickname").val() && $("#masterPassword").val()) { //...but only if the two other fields were filled out, in case one was accidentally tabbed past
+        accountPassword.focusout(function() {
+          if (nickname.val() && masterPassword.val()) { //...but only if the two other fields were filled out, in case one was accidentally tabbed past
             $("input").val(""); //Clear the contents of all fields
-            $("#masterPassword").focus(); //Clear the chroma-hash
-            $("#nickname").focus(); //Focus the nickname field for next time around
+            masterPassword.trigger("blur"); //Clear the chroma-hash
+            nickname.focus(); //Focus the nickname field for next time around
           }
         });
 
       });
+
     </script>
+
   </body>
+
 </html>
